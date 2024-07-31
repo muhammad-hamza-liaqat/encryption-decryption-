@@ -1,8 +1,8 @@
 const SimpleCrypto = require('simple-crypto-js').default;
 require('dotenv').config();
-const crypto = new SimpleCrypto(encryptionKey);
 
 const encryptionKey = process.env.ENCRYPTION_KEY;
+const crypto = new SimpleCrypto(encryptionKey);
 
 const encryptMessage = (message) => {
   try {
