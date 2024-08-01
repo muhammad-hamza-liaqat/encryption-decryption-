@@ -2,6 +2,11 @@ const CryptoJS = require('crypto-js');
 
 const encryptionKey = process.env.ENCRYPTION_KEY;
 
+if (encryptionKey.length !== 16) {
+  throw new Error('ENCRYPTION_KEY must be exactly 16 characters long for AES-128 encryption.');
+    // console.warn('ENCRYPTION_KEY is longer than 16 characters. It will be truncated to 16 characters.');
+}
+
 const key = CryptoJS.enc.Utf8.parse(encryptionKey.substring(0, 16));
 
 const doEncryption = (message) => {
