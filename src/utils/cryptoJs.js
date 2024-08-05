@@ -51,6 +51,32 @@ const decryptObject = (obj) => {
   return decryptedObj;
 };
 
+// handling objects encryption and decryption with nested objects
+
+// const encryptObject = (obj) => {
+//   let encryptedObj = {};
+//   for (const [key, value] of Object.entries(obj)) {
+//       if (typeof value === 'object' && value !== null) {
+//           encryptedObj[key] = encryptObject(value);
+//       } else {
+//           encryptedObj[key] = doEncryption(value.toString());
+//       }
+//   }
+//   return encryptedObj;
+// };
+
+// const decryptObject = (obj) => {
+//   let decryptedObj = {};
+//   for (const [key, value] of Object.entries(obj)) {
+//       if (typeof value === 'object' && value !== null) {
+//           decryptedObj[key] = decryptObject(value);
+//       } else {
+//           decryptedObj[key] = doDecryption(value);
+//       }
+//   }
+//   return decryptedObj;
+// };
+
 module.exports = {
   encryptObject,
   decryptObject

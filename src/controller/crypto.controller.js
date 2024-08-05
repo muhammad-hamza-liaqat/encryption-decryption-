@@ -10,7 +10,9 @@ const encryptFunction = async (req, res) => {
         return res.status(400).json({ error: 'Data object is required.' });
     }
     try {
+        console.log(data)
         const encryptedData = encryptObject(data);
+        console.log(encryptedData)
         return res.status(201).json({ statusCode: 201, message: "Success", data: encryptedData });
     } catch (error) {
         console.error("Internal error:", error);
@@ -24,7 +26,10 @@ const decryptFunction = async (req, res) => {
         return res.status(400).json({ error: "Encrypted data object is required" });
     }
     try {
+        console.log(data)
         const decryptedData = decryptObject(data);
+        console.log(decryptedData)
+
         return res.status(200).json({ statusCode: 200, message: "Success", data: decryptedData });
     } catch (error) {
         console.error("Internal error:", error);
