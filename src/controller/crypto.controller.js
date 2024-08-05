@@ -1,17 +1,17 @@
-const { doEncryption, doDecryption } = require("../utils/cryptoJs");
+const { encryptObject, decryptObject } = require("../utils/cryptoJs");
 
 const defaultFunction = async (req, res) => {
     res.end("A Node.js application!");
 };
 
 const encryptFunction = async (req, res) => {
-    const { message } = req.body;
-    if (!message) {
-        return res.status(400).json({ error: 'Message is required.' });
+    const { data } = req.body;
+    if (!data || typeof data !== 'object') {
+        return res.status(400).json({ error: 'Data object is required.' });
     }
     try {
-        const encryptedMessage = doEncryption(message);
-        return res.status(201).json({ statusCode: 201, message: "Success", data: encryptedMessage });
+        const encryptedData = encryptObject(data);
+        return res.status(201).json({ statusCode: 201, message: "Success", data: encryptedData });
     } catch (error) {
         console.error("Internal error:", error);
         return res.status(500).json({ message: "Internal server error", error: error.message });
@@ -19,13 +19,13 @@ const encryptFunction = async (req, res) => {
 };
 
 const decryptFunction = async (req, res) => {
-    const { text } = req.body;
-    if (!text) {
-        return res.status(400).json({ error: "Encrypted text message is required" });
+    const { data } = req.body;
+    if (!data || typeof data !== 'object') {
+        return res.status(400).json({ error: "Encrypted data object is required" });
     }
     try {
-        const decryptedMessage = doDecryption(text);
-        return res.status(200).json({ statusCode: 200, message: "Success", data: decryptedMessage });
+        const decryptedData = decryptObject(data);
+        return res.status(200).json({ statusCode: 200, message: "Success", data: decryptedData });
     } catch (error) {
         console.error("Internal error:", error);
         return res.status(500).json({ message: "Internal server error", error: error.message });

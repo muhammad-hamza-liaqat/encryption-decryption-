@@ -4,7 +4,7 @@ const encryptionKey = process.env.ENCRYPTION_KEY;
 
 if (encryptionKey.length !== 16) {
   throw new Error('ENCRYPTION_KEY must be exactly 16 characters long for AES-128 encryption.');
-    // console.warn('ENCRYPTION_KEY is longer than 16 characters. It will be truncated to 16 characters.');
+  // console.warn('ENCRYPTION_KEY is longer than 16 characters. It will be truncated to 16 characters.');
 }
 
 const key = CryptoJS.enc.Utf8.parse(encryptionKey.substring(0, 16));
@@ -33,7 +33,25 @@ const doDecryption = (encryptedMessage) => {
   }
 };
 
+
+// handling objects encryption and decryption
+const encryptObject = (obj) => {
+  let encryptedObj = {};
+  for (const [key, value] of Object.entries(obj)) {
+    encryptedObj[key] = doEncryption(value);
+  }
+  return encryptedObj;
+};
+
+const decryptObject = (obj) => {
+  let decryptedObj = {};
+  for (const [key, value] of Object.entries(obj)) {
+    decryptedObj[key] = doDecryption(value);
+  }
+  return decryptedObj;
+};
+
 module.exports = {
-  doEncryption,
-  doDecryption
+  encryptObject,
+  decryptObject
 };
