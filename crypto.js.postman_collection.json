@@ -1,0 +1,67 @@
+{
+	"info": {
+		"_postman_id": "9e9d9203-6899-4a02-822e-d0128477c127",
+		"name": "crypto.js",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30134387",
+		"_collection_link": "https://grey-escape-224058.postman.co/workspace/lambda-functions~01e0e691-088a-4342-8d89-5465faf36baf/collection/30134387-9e9d9203-6899-4a02-822e-d0128477c127?action=share&source=collection_link&creator=30134387"
+	},
+	"item": [
+		{
+			"name": "encryption",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"data\": {\r\n    \"field1\": \"testingencryption!£$%\",\r\n    \"field2\": \"anotherFieldToEncrypt\",\r\n    \"name\": \"Muhammad Hamza Liaqat\",\r\n    \"email\": \"mh4088800@gmail.com\",\r\n    \"phone\": \"03144099558\"\r\n  }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/en",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"en"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "decryption",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"field1\": \"y09kf2mmlyvz8clMU5wRYg3j6eilcgi34uTU7lU3TRI=\",\r\n        \"field2\": \"6ecc5vjFk+/UZZiJ8Lb1DevToaDyT9hdAy1HH4AhPlM=\",\r\n        \"name\": \"dCcEGL38y0CoiquMt2nU4j4rIL6OQ8/550klqFEbZ54=\",\r\n        \"email\": \"V1MjYORYHzQ2NcSaAbImtOFDRUJ85IFw2MmsIQ/fVNI=\",\r\n        \"phone\": \"eKQt/a9qnIONDj4BOyr/Xg==\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/de",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"de"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
