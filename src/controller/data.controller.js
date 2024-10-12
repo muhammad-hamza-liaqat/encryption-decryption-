@@ -66,6 +66,88 @@ const defaultFunction = async (req, res) => {
 // };
 
 
+// const getData = async (req, res) => {
+//     try {
+//         const db = await connectDB();
+//         const userModel = db.collection("users");
+
+//         const userId = new ObjectId("66ec23c4650c7d4c2cdc639b");
+
+//         const user = await userModel.findOne({ _id: userId });
+
+//         if (!user) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: 'User not found'
+//             });
+//         }
+
+//         const userTotalReferrals = user.totalReferrals;
+//         const userUpdatedAt = user.updatedAt;
+
+//         // Get all users to compare
+//         const allUsers = await userModel.find({}).toArray();
+
+//         // Calculate the rank of the main user by comparing with all users
+//         const rankCountMore = allUsers.filter(otherUser => 
+//             otherUser.totalReferrals > userTotalReferrals
+//         ).length;
+
+//         // Filter users with the same totalReferrals, excluding the main user
+//         const sameRankUsers = allUsers.filter(otherUser => 
+//             otherUser.totalReferrals === userTotalReferrals && 
+//             !otherUser._id.equals(userId)
+//         );
+
+//         // Create a rank mapping for same rank users based on updatedAt
+//         const rankedSameRankUsers = sameRankUsers.map(otherUser => {
+//             return {
+//                 _id: otherUser._id,
+//                 username: otherUser.username,
+//                 totalReferrals: otherUser.totalReferrals,
+//                 updatedAt: otherUser.updatedAt,
+//             };
+//         });
+
+//         // Add the main user to the ranked list
+//         rankedSameRankUsers.push({
+//             _id: user._id,
+//             username: user.username,
+//             totalReferrals: user.totalReferrals,
+//             updatedAt: user.updatedAt,
+//         });
+
+//         // Sort the combined array by updatedAt descending
+//         rankedSameRankUsers.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+//         // Reassign ranks based on the sorted order
+//         rankedSameRankUsers.forEach((user, index) => {
+//             user.rank = rankCountMore + index + 1; // Offset rank based on previous count
+//         });
+
+//         // Get the main user's rank
+//         const mainUserRank = rankedSameRankUsers.find(user => user._id.equals(userId)).rank;
+
+//         res.status(200).json({
+//             success: true,
+//             data: {
+//                 _id: user._id,
+//                 name: user.username,
+//                 totalReferrals: user.totalReferrals,
+//                 updatedAt: user.updatedAt,
+//                 rank: mainUserRank,
+//                 sameRankUsers: rankedSameRankUsers.filter(u => u._id !== userId) // Exclude the main user
+//             }
+//         });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({
+//             success: false,
+//             message: 'Error calculating user rank'
+//         });
+//     }
+// };
+
 const getData = async (req, res) => {
     try {
         const db = await connectDB();
@@ -88,45 +170,33 @@ const getData = async (req, res) => {
         // Get all users to compare
         const allUsers = await userModel.find({}).toArray();
 
-        // Calculate the rank of the main user by comparing with all users
-        const rankCountMore = allUsers.filter(otherUser => 
-            otherUser.totalReferrals > userTotalReferrals
-        ).length;
-
-        // Filter users with the same totalReferrals, excluding the main user
-        const sameRankUsers = allUsers.filter(otherUser => 
-            otherUser.totalReferrals === userTotalReferrals && 
-            !otherUser._id.equals(userId)
-        );
-
-        // Create a rank mapping for same rank users based on updatedAt
-        const rankedSameRankUsers = sameRankUsers.map(otherUser => {
-            return {
-                _id: otherUser._id,
-                username: otherUser.username,
-                totalReferrals: otherUser.totalReferrals,
-                updatedAt: otherUser.updatedAt,
-            };
+        // Sort users based on totalReferrals and then updatedAt
+        allUsers.sort((a, b) => {
+            // Sort by totalReferrals descending
+            if (b.totalReferrals !== a.totalReferrals) {
+                return b.totalReferrals - a.totalReferrals;
+            }
+            // If totalReferrals are equal, sort by updatedAt descending (compare full date)
+            return new Date(b.updatedAt) - new Date(a.updatedAt);
         });
 
-        // Add the main user to the ranked list
-        rankedSameRankUsers.push({
-            _id: user._id,
-            username: user.username,
-            totalReferrals: user.totalReferrals,
-            updatedAt: user.updatedAt,
-        });
+        // Create a rank mapping and calculate unique ranks
+        const rankedUsers = [];
 
-        // Sort the combined array by updatedAt descending
-        rankedSameRankUsers.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+        for (let i = 0; i < allUsers.length; i++) {
+            const currentUser = allUsers[i];
 
-        // Reassign ranks based on the sorted order
-        rankedSameRankUsers.forEach((user, index) => {
-            user.rank = rankCountMore + index + 1; // Offset rank based on previous count
-        });
+            rankedUsers.push({
+                _id: currentUser._id,
+                username: currentUser.username,
+                totalReferrals: currentUser.totalReferrals,
+                updatedAt: currentUser.updatedAt,
+                rank: i + 1 // Assign unique rank based on index
+            });
+        }
 
-        // Get the main user's rank
-        const mainUserRank = rankedSameRankUsers.find(user => user._id.equals(userId)).rank;
+        // Find the main user's rank
+        const mainUserRank = rankedUsers.find(user => user._id.equals(userId)).rank;
 
         res.status(200).json({
             success: true,
@@ -136,7 +206,7 @@ const getData = async (req, res) => {
                 totalReferrals: user.totalReferrals,
                 updatedAt: user.updatedAt,
                 rank: mainUserRank,
-                sameRankUsers: rankedSameRankUsers.filter(u => u._id !== userId) // Exclude the main user
+                sameRankUsers: rankedUsers.filter(u => !u._id.equals(userId)) // Exclude the main user
             }
         });
     } catch (error) {
@@ -147,6 +217,12 @@ const getData = async (req, res) => {
         });
     }
 };
+
+
+
+
+
+
 
 module.exports = {
     defaultFunction,
